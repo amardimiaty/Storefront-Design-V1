@@ -607,16 +607,14 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
           <div className="flex gap-2">
             <button
               onClick={handlePreviousCollection}
-              className="bg-background/80 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-md border border-border
-                        transition-all duration-200"
+              className="bg-background/80 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-md border border-border transition-all duration-200"
               aria-label="View previous collections"
             >
               <ChevronLeft className="h-5 w-5 text-foreground" />
             </button>
             <button
               onClick={handleNextCollection}
-              className="bg-background/80 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-md border border-border
-                        transition-all duration-200"
+              className="bg-background/80 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-md border border-border transition-all duration-200"
               aria-label="View next collections"
             >
               <ChevronRight className="h-5 w-5 text-foreground" />
