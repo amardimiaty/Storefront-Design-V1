@@ -1,12 +1,39 @@
 "use client"
 
+import type React from "react"
+
 import Link from "next/link"
 import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight } from "lucide-react"
 import { useWishlist } from "@/components/wishlist/wishlist-context"
 import { useToast } from "@/components/ui/use-toast"
 import { useState, useEffect } from "react"
 
-// Add keyframes animation for staggered entry
+// Define proper types for our data
+interface Product {
+  id: string
+  name: string
+  price: number
+  originalPrice: number
+  rating: number
+  reviewCount: number
+  image: string
+  category: string
+  isNew: boolean
+  isFeatured: boolean
+  discount: number
+  slug: string
+  stock: number
+}
+
+interface Collection {
+  id: string
+  name: string
+  slug: string
+  image: string
+  description: string
+}
+
+// Add keyframes animation for staggered entry - using template literal (backticks)
 const fadeInUpKeyframes = `
 @keyframes fadeInUp {
   from {
@@ -24,7 +51,7 @@ const fadeInUpKeyframes = `
 `
 
 // Mock data - in a real app, this would come from an API
-const featuredProducts = [
+const featuredProducts: Product[] = [
   {
     id: "1",
     name: "Minimalist Cotton T-Shirt",
@@ -448,7 +475,7 @@ const featuredProducts = [
 ]
 
 // Mock collections data
-const recentCollections = [
+const recentCollections: Collection[] = [
   {
     id: "1",
     name: "Summer Essentials",
@@ -489,19 +516,23 @@ const recentCollections = [
 // New arrivals - subset of products marked as new
 const newArrivals = featuredProducts.filter((product) => product.isNew)
 
-export default function FeaturedProducts({ type = "featured" }: { type?: "featured" | "new-arrivals" }) {
+interface FeaturedProductsProps {
+  type?: "featured" | "new-arrivals"
+}
+
+export default function FeaturedProducts({ type = "featured" }: FeaturedProductsProps) {
   const products = type === "featured" ? featuredProducts : newArrivals
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   const { toast } = useToast()
 
   // Inside the FeaturedProducts component, add these state variables after the existing const declarations:
-  const [currentPage, setCurrentPage] = useState(0)
-  const [displayedProducts, setDisplayedProducts] = useState([])
-  const [animationDirection, setAnimationDirection] = useState("next")
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [exitComplete, setExitComplete] = useState(true)
-  const [animationVariant, setAnimationVariant] = useState("fade")
-  const [currentCollectionIndex, setCurrentCollectionIndex] = useState(0)
+  const [currentPage, setCurrentPage] = useState<number>(0)
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([])
+  const [animationDirection, setAnimationDirection] = useState<"next" | "prev">("next")
+  const [isAnimating, setIsAnimating] = useState<boolean>(false)
+  const [exitComplete, setExitComplete] = useState<boolean>(true)
+  const [animationVariant, setAnimationVariant] = useState<"slide" | "fade" | "zoom" | "flip">("fade")
+  const [currentCollectionIndex, setCurrentCollectionIndex] = useState<number>(0)
   const collectionsToShow = 3 // Number of collections to show at once
 
   const productsPerPage = 12 // 6 columns x 2 rows
@@ -514,7 +545,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
     setDisplayedProducts(products.slice(startIndex, endIndex))
   }, [currentPage, products])
 
-  const handleWishlistClick = (e, product) => {
+  const handleWishlistClick = (e: React.MouseEvent, product: Product) => {
     e.preventDefault()
 
     if (isInWishlist(product.id)) {
@@ -541,7 +572,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
     }
   }
 
-  const handleAddToCart = (e, productId) => {
+  const handleAddToCart = (e: React.MouseEvent, productId: string) => {
     e.preventDefault()
     console.log(`Added product ${productId} to cart`)
   }
@@ -552,7 +583,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
     setAnimationDirection("prev")
 
     // Randomly select an animation variant
-    const variants = ["slide", "fade", "zoom", "flip"]
+    const variants: ["slide", "fade", "zoom", "flip"] = ["slide", "fade", "zoom", "flip"]
     setAnimationVariant(variants[Math.floor(Math.random() * variants.length)])
 
     setExitComplete(false)
@@ -571,7 +602,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
     setAnimationDirection("next")
 
     // Randomly select an animation variant
-    const variants = ["slide", "fade", "zoom", "flip"]
+    const variants: ["slide", "fade", "zoom", "flip"] = ["slide", "fade", "zoom", "flip"]
     setAnimationVariant(variants[Math.floor(Math.random() * variants.length)])
 
     setExitComplete(false)
@@ -664,9 +695,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
           {/* Left arrow navigation */}
           <button
             onClick={handlePrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background 
-                      backdrop-blur-sm rounded-r-full p-2 shadow-md border border-border border-l-0
-                      transition-all duration-200 hover:pl-3"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background backdrop-blur-sm rounded-r-full p-2 shadow-md border border-border border-l-0 transition-all duration-200 hover:pl-3"
             aria-label="View previous products"
           >
             <ChevronLeft className="h-6 w-6 text-foreground" />
@@ -757,9 +786,7 @@ export default function FeaturedProducts({ type = "featured" }: { type?: "featur
           {/* Right arrow navigation */}
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background 
-                      backdrop-blur-sm rounded-l-full p-2 shadow-md border border-border border-r-0
-                      transition-all duration-200 hover:pr-3"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background backdrop-blur-sm rounded-l-full p-2 shadow-md border border-border border-r-0 transition-all duration-200 hover:pr-3"
             aria-label="View next products"
           >
             <ChevronRight className="h-6 w-6 text-foreground" />
